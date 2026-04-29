@@ -1,19 +1,15 @@
-// Backend API URL
 const API_URL = 'http://localhost:3000/api';
 
-// Global variables
 let students = [];
 let attendanceRecords = [];
 let attendanceChart = null;
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
   setTodayDate();
   fetchStudents();
   fetchAttendanceData();
 });
 
-// Fetch students
 function fetchStudents() {
   fetch(`${API_URL}/students`)
     .then(res => res.json())
@@ -23,19 +19,16 @@ function fetchStudents() {
     });
 }
 
-// Fetch attendance
 function fetchAttendanceData() {
   fetch(`${API_URL}/attendance`)
     .then(res => res.json())
     .then(data => {
       attendanceRecords = data;
-
       updateStats();
       displayTodaysAttendance();
     });
 }
 
-// Set today + listen to date change
 function setTodayDate() {
   const dateInput = document.getElementById('attendance-date');
   const today = new Date().toISOString().split('T')[0];
@@ -47,31 +40,21 @@ function setTodayDate() {
   });
 }
 
-// Render students
 function renderStudents() {
   const container = document.getElementById('students-list');
   container.innerHTML = '';
 
   students.forEach(student => {
-    const div = document.createElement('div');
-    div.className = 'student-card';
-
-    div.innerHTML = `
-      <div>
-        <b>${student.name}</b><br/>
-        ID: ${student.id}
-      </div>
-      <div>
+    container.innerHTML += `
+      <p>
+        ${student.name}
         <button onclick="markAttendance('${student.id}','Present')">Present</button>
         <button onclick="markAttendance('${student.id}','Absent')">Absent</button>
-      </div>
+      </p>
     `;
-
-    container.appendChild(div);
   });
 }
 
-// Mark attendance
 function markAttendance(studentId, status) {
   const date = document.getElementById('attendance-date').value;
 
@@ -83,10 +66,9 @@ function markAttendance(studentId, status) {
   .then(() => fetchAttendanceData());
 }
 
-// 🔥 FIXED: Stats now use selected date properly
+// ✅ FIXED STATS FUNCTION
 function updateStats() {
   const selectedDate = document.getElementById('attendance-date').value;
-
   const filtered = attendanceRecords.filter(r => r.date === selectedDate);
 
   const statsList = document.getElementById('stats-list');
@@ -96,23 +78,35 @@ function updateStats() {
   let totalAbsent = 0;
 
   students.forEach(student => {
-    const records = filtered.filter(r => r.studentId === student.id);
+    const record = filtered.find(r => r.studentId === student.id);
 
-    const present = records.filter(r => r.status === 'Present').length;
-    const total = records.length;
-    const percent = total ? Math.round((present / total) * 100) : 0;
+    let percent = 0;
+    let statusText = "Not Marked";
 
-    if (present) totalPresent++;
-    if (total && present === 0) totalAbsent++;
+    if (record) {
+      if (record.status === 'Present') {
+        percent = 100;
+        totalPresent++;
+        statusText = "Present";
+      } else {
+        percent = 0;
+        totalAbsent++;
+        statusText = "Absent";
+      }
+    } else {
+      totalAbsent++; // treat not marked as absent
+    }
 
-    const isLow = percent < 75 && total > 0;
+    const isLow = percent < 75;
 
     const div = document.createElement('div');
     div.className = isLow ? 'stat-card at-risk' : 'stat-card';
 
     div.innerHTML = `
-      <b>${student.name}</b> 
-      ${isLow ? '⚠️ At Risk' : ''}
+      <b>${student.name}</b>
+      ${isLow ? ' ⚠️ At Risk' : ''}
+      <br/>
+      Status: ${statusText}
       <br/>
       ${percent}%
     `;
@@ -126,7 +120,7 @@ function updateStats() {
   renderChart();
 }
 
-// 🔥 FIXED: Chart uses filtered data
+// ✅ CHART WORKING WITH NEW LOGIC
 function renderChart() {
   const selectedDate = document.getElementById('attendance-date').value;
   const filtered = attendanceRecords.filter(r => r.date === selectedDate);
@@ -136,11 +130,13 @@ function renderChart() {
   const colors = [];
 
   students.forEach(student => {
-    const records = filtered.filter(r => r.studentId === student.id);
+    const record = filtered.find(r => r.studentId === student.id);
 
-    const present = records.filter(r => r.status === 'Present').length;
-    const total = records.length;
-    const percent = total ? Math.round((present / total) * 100) : 0;
+    let percent = 0;
+
+    if (record) {
+      percent = record.status === 'Present' ? 100 : 0;
+    }
 
     labels.push(student.name);
     data.push(percent);
@@ -164,29 +160,68 @@ function renderChart() {
   });
 }
 
-// 🔥 FIXED: studentName mapping added
+// ADD STUDENT
+function addStudent() {
+  const id = document.getElementById('new-student-id').value.trim();
+  const name = document.getElementById('new-student-name').value.trim();
+
+  if (!id || !name) {
+    alert("Enter ID and Name");
+    return;
+  }
+
+  fetch(`${API_URL}/students`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ id, name })
+  })
+  .then(() => {
+    fetchStudents();
+  });
+}
+
+// TODAY'S ATTENDANCE
 function displayTodaysAttendance() {
   const selectedDate = document.getElementById('attendance-date').value;
-
   const list = document.getElementById('todays-attendance-list');
-  list.innerHTML = '';
 
   const filtered = attendanceRecords.filter(r => r.date === selectedDate);
 
   if (filtered.length === 0) {
-    list.innerHTML = '<p>No records</p>';
+    list.innerHTML = 'No records';
     return;
   }
 
-  filtered.forEach(record => {
-    const student = students.find(s => s.id === record.studentId);
+  list.innerHTML = filtered.map(r =>
+    `${r.studentName} - ${r.status}`
+  ).join('<br>');
+}
 
-    const div = document.createElement('div');
-    div.innerHTML = `
-      ${student ? student.name : 'Unknown'} 
-      (${record.studentId}) - ${record.status}
-    `;
+// SHARE ABSENT STUDENTS
+function shareReport() {
+  const selectedDate = document.getElementById('attendance-date').value;
+  const filtered = attendanceRecords.filter(r => r.date === selectedDate);
 
-    list.appendChild(div);
+  let report = `Absent Students (${selectedDate}):\n\n`;
+
+  let hasAbsent = false;
+
+  students.forEach(student => {
+    const record = filtered.find(r => r.studentId === student.id);
+
+    if (!record || record.status === 'Absent') {
+      report += `${student.name}\n`;
+      hasAbsent = true;
+    }
   });
+
+  if (!hasAbsent) {
+    alert("No absent students");
+    return;
+  }
+
+  navigator.clipboard.writeText(report);
+
+  const url = `https://wa.me/?text=${encodeURIComponent(report)}`;
+  window.open(url, "_blank");
 }
