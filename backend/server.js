@@ -15,9 +15,9 @@ app.get('/', (req, res) => {
 
 // Sample student data
 const students = [
-  { id: 'DAS001', name: 'Ranveer Singh' },
-  { id: 'DAS002', name: 'Sneha Kumari' },
-  { id: 'DAS003', name: 'Aditya Kumar' }
+  { id: '001', name: 'Ranveer Singh' },
+  { id: '002', name: 'Sneha Kumari' },
+  { id: '003', name: 'Aditya Kumar' }
 ];
 
 // In-memory attendance records

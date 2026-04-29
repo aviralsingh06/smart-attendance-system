@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Attendance System</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
@@ -30,11 +32,27 @@
         </div>
       </div>
 
+      <!-- Today's Attendance section -->
+      <div class="todays-attendance-section">
+        <h2>Today's Attendance</h2>
+        <div id="todays-attendance-list" class="todays-attendance-list">
+          <!-- Attendance records will be populated by JavaScript -->
+        </div>
+      </div>
+
       <!-- Stats section -->
       <div class="stats-section">
         <h2>Attendance Stats</h2>
         <div id="stats-list" class="stats-list">
           <!-- Stats will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Chart section -->
+      <div class="chart-section">
+        <h2>Attendance Chart</h2>
+        <div class="chart-container">
+          <canvas id="attendanceChart"></canvas>
         </div>
       </div>
 

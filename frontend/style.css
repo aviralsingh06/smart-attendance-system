@@ -144,6 +144,96 @@ button {
   background: #da190b;
 }
 
+/* Today's Attendance section */
+.todays-attendance-section {
+  margin-bottom: 30px;
+}
+
+.todays-attendance-section h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.todays-attendance-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.attendance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 6px;
+  border-left: 4px solid;
+  transition: all 0.3s ease;
+}
+
+.attendance-item.present {
+  background: #e8f5e9;
+  border-left-color: #4caf50;
+}
+
+.attendance-item.absent {
+  background: #ffebee;
+  border-left-color: #f44336;
+}
+
+.attendance-item:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-info {
+  flex: 1;
+}
+
+.attendance-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1em;
+  margin-bottom: 4px;
+}
+
+.attendance-id {
+  font-size: 0.85em;
+  color: #999;
+}
+
+.attendance-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.attendance-item.present .status-badge {
+  background: #4caf50;
+  color: white;
+}
+
+.attendance-item.absent .status-badge {
+  background: #f44336;
+  color: white;
+}
+
+.no-records {
+  text-align: center;
+  color: #999;
+  font-size: 0.95em;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px dashed #ddd;
+}
+
 /* Stats section */
 .stats-list {
   display: grid;
@@ -156,6 +246,18 @@ button {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.stat-card.at-risk {
+  background: #ffebee;
+  border-color: #ef5350;
+  border-left: 4px solid #ef5350;
+}
+
+.stat-card:not(.at-risk) {
+  background: #f1f8f4;
+  border-color: #4caf50;
 }
 
 .stat-header {
@@ -165,9 +267,25 @@ button {
   margin-bottom: 10px;
 }
 
+.stat-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .stat-name {
   font-weight: 600;
   color: #333;
+}
+
+.at-risk-label {
+  font-size: 0.75em;
+  background: #ffcdd2;
+  color: #c62828;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .stat-percentage {
@@ -245,6 +363,24 @@ footer {
   text-align: center;
   color: #999;
   font-size: 0.9em;
+}
+
+/* Chart section */
+.chart-section {
+  margin-bottom: 30px;
+}
+
+.chart-section h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.chart-container {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
 /* Responsive design */

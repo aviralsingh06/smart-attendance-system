@@ -4,159 +4,189 @@ const API_URL = 'http://localhost:3000/api';
 // Global variables
 let students = [];
 let attendanceRecords = [];
+let attendanceChart = null;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
   setTodayDate();
   fetchStudents();
   fetchAttendanceData();
-  updateStats();
 });
 
-// Fetch students from backend
+// Fetch students
 function fetchStudents() {
   fetch(`${API_URL}/students`)
-    .then((response) => response.json())
-    .then((data) => {
+    .then(res => res.json())
+    .then(data => {
       students = data;
       renderStudents();
-    })
-    .catch((error) => {
-      console.error('Error fetching students:', error);
-      alert('Error: Could not connect to backend. Make sure the server is running on http://localhost:3000');
     });
 }
 
-// Fetch attendance records from backend
+// Fetch attendance
 function fetchAttendanceData() {
   fetch(`${API_URL}/attendance`)
-    .then((response) => response.json())
-    .then((data) => {
+    .then(res => res.json())
+    .then(data => {
       attendanceRecords = data;
+
       updateStats();
-    })
-    .catch((error) => {
-      console.error('Error fetching attendance:', error);
+      displayTodaysAttendance();
     });
 }
 
-// Set today's date as default
+// Set today + listen to date change
 function setTodayDate() {
   const dateInput = document.getElementById('attendance-date');
   const today = new Date().toISOString().split('T')[0];
   dateInput.value = today;
-}
 
-// Render students list
-function renderStudents() {
-  const studentsList = document.getElementById('students-list');
-  studentsList.innerHTML = '';
-
-  students.forEach((student) => {
-    const studentCard = document.createElement('div');
-    studentCard.className = 'student-card';
-    studentCard.innerHTML = `
-      <div class="student-info">
-        <div class="student-name">${student.name}</div>
-        <div class="student-id">ID: ${student.id}</div>
-      </div>
-      <div class="student-actions">
-        <button class="btn-present" onclick="markAttendance('${student.id}', 'Present')">Present</button>
-        <button class="btn-absent" onclick="markAttendance('${student.id}', 'Absent')">Absent</button>
-      </div>
-    `;
-    studentsList.appendChild(studentCard);
+  dateInput.addEventListener('change', () => {
+    updateStats();
+    displayTodaysAttendance();
   });
 }
 
-// Mark attendance for a student
+// Render students
+function renderStudents() {
+  const container = document.getElementById('students-list');
+  container.innerHTML = '';
+
+  students.forEach(student => {
+    const div = document.createElement('div');
+    div.className = 'student-card';
+
+    div.innerHTML = `
+      <div>
+        <b>${student.name}</b><br/>
+        ID: ${student.id}
+      </div>
+      <div>
+        <button onclick="markAttendance('${student.id}','Present')">Present</button>
+        <button onclick="markAttendance('${student.id}','Absent')">Absent</button>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+// Mark attendance
 function markAttendance(studentId, status) {
-  const dateInput = document.getElementById('attendance-date');
-  const date = dateInput.value;
-
-  if (!date) {
-    alert('Please select a date.');
-    return;
-  }
-
-  const attendanceData = {
-    studentId,
-    status,
-    date
-  };
+  const date = document.getElementById('attendance-date').value;
 
   fetch(`${API_URL}/attendance`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(attendanceData)
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ studentId, status, date })
   })
-    .then((response) => response.json())
-    .then(() => {
-      const student = students.find((s) => s.id === studentId);
-      const studentName = student ? student.name : 'Unknown';
-
-      alert(`✓ ${studentName} marked as ${status} on ${date}`);
-
-      fetchAttendanceData();
-    })
-    .catch((error) => {
-      console.error('Error marking attendance:', error);
-    });
+  .then(() => fetchAttendanceData());
 }
 
-// Fetch and display stats
+// 🔥 FIXED: Stats now use selected date properly
 function updateStats() {
-  fetch(`${API_URL}/attendance/percentages`)
-    .then((response) => response.json())
-    .then((stats) => {
-      const statsList = document.getElementById('stats-list');
-      statsList.innerHTML = '';
+  const selectedDate = document.getElementById('attendance-date').value;
 
-      let totalPresent = 0;
-      let totalAbsent = 0;
+  const filtered = attendanceRecords.filter(r => r.date === selectedDate);
 
-      stats.forEach((stat) => {
-        const todayRecord = attendanceRecords.find(
-          (record) =>
-            record.studentId === stat.studentId &&
-            record.date === document.getElementById('attendance-date').value
-        );
+  const statsList = document.getElementById('stats-list');
+  statsList.innerHTML = '';
 
-        if (todayRecord) {
-          if (todayRecord.status === 'Present') totalPresent++;
-          else totalAbsent++;
-        }
+  let totalPresent = 0;
+  let totalAbsent = 0;
 
-        const percentageClass =
-          stat.percentage >= 75 && stat.totalDays > 0
-            ? 'percentage-high'
-            : 'percentage-low';
+  students.forEach(student => {
+    const records = filtered.filter(r => r.studentId === student.id);
 
-        const statCard = document.createElement('div');
-        statCard.className = 'stat-card';
-        statCard.innerHTML = `
-          <div class="stat-header">
-            <div class="stat-name">${stat.name}</div>
-            <div class="stat-percentage ${percentageClass}">
-              ${stat.percentage}%
-              ${stat.percentage < 75 && stat.totalDays > 0 ? ' ⚠️' : ''}
-            </div>
-          </div>
-          <div class="stat-details">
-            <div class="stat-item"><strong>Present:</strong> ${stat.presentDays}</div>
-            <div class="stat-item"><strong>Absent:</strong> ${stat.absentDays}</div>
-            <div class="stat-item"><strong>Total:</strong> ${stat.totalDays}</div>
-          </div>
-        `;
-        statsList.appendChild(statCard);
-      });
+    const present = records.filter(r => r.status === 'Present').length;
+    const total = records.length;
+    const percent = total ? Math.round((present / total) * 100) : 0;
 
-      document.getElementById('total-present').textContent = totalPresent;
-      document.getElementById('total-absent').textContent = totalAbsent;
-    })
-    .catch((error) => {
-      console.error('Error fetching stats:', error);
-    });
+    if (present) totalPresent++;
+    if (total && present === 0) totalAbsent++;
+
+    const isLow = percent < 75 && total > 0;
+
+    const div = document.createElement('div');
+    div.className = isLow ? 'stat-card at-risk' : 'stat-card';
+
+    div.innerHTML = `
+      <b>${student.name}</b> 
+      ${isLow ? '⚠️ At Risk' : ''}
+      <br/>
+      ${percent}%
+    `;
+
+    statsList.appendChild(div);
+  });
+
+  document.getElementById('total-present').textContent = totalPresent;
+  document.getElementById('total-absent').textContent = totalAbsent;
+
+  renderChart();
+}
+
+// 🔥 FIXED: Chart uses filtered data
+function renderChart() {
+  const selectedDate = document.getElementById('attendance-date').value;
+  const filtered = attendanceRecords.filter(r => r.date === selectedDate);
+
+  const labels = [];
+  const data = [];
+  const colors = [];
+
+  students.forEach(student => {
+    const records = filtered.filter(r => r.studentId === student.id);
+
+    const present = records.filter(r => r.status === 'Present').length;
+    const total = records.length;
+    const percent = total ? Math.round((present / total) * 100) : 0;
+
+    labels.push(student.name);
+    data.push(percent);
+    colors.push(percent >= 75 ? '#4caf50' : '#f44336');
+  });
+
+  const ctx = document.getElementById('attendanceChart');
+
+  if (attendanceChart) attendanceChart.destroy();
+
+  attendanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Attendance %',
+        data,
+        backgroundColor: colors
+      }]
+    }
+  });
+}
+
+// 🔥 FIXED: studentName mapping added
+function displayTodaysAttendance() {
+  const selectedDate = document.getElementById('attendance-date').value;
+
+  const list = document.getElementById('todays-attendance-list');
+  list.innerHTML = '';
+
+  const filtered = attendanceRecords.filter(r => r.date === selectedDate);
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<p>No records</p>';
+    return;
+  }
+
+  filtered.forEach(record => {
+    const student = students.find(s => s.id === record.studentId);
+
+    const div = document.createElement('div');
+    div.innerHTML = `
+      ${student ? student.name : 'Unknown'} 
+      (${record.studentId}) - ${record.status}
+    `;
+
+    list.appendChild(div);
+  });
 }
