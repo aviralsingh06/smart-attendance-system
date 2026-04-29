@@ -1,0 +1,17 @@
+{
+  "name": "smart-attendance-backend",
+  "version": "1.0.0",
+  "description": "Simple Smart Attendance System backend using Express and in-memory storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

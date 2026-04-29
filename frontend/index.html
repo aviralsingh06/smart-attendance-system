@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>📚 Smart Attendance System</h1>
+      <p>Mark attendance and track student performance</p>
+    </header>
+
+    <!-- Main content -->
+    <main>
+      <!-- Date section -->
+      <div class="date-section">
+        <label for="attendance-date">Select Date:</label>
+        <input type="date" id="attendance-date">
+      </div>
+
+      <!-- Students list -->
+      <div class="students-section">
+        <h2>Students</h2>
+        <div id="students-list" class="students-list">
+          <!-- Students will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Stats section -->
+      <div class="stats-section">
+        <h2>Attendance Stats</h2>
+        <div id="stats-list" class="stats-list">
+          <!-- Stats will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Summary section -->
+      <div class="summary-section">
+        <h2>Today's Summary</h2>
+        <div class="summary-cards">
+          <div class="card">
+            <p class="label">Total Present</p>
+            <p id="total-present" class="value">0</p>
+          </div>
+          <div class="card">
+            <p class="label">Total Absent</p>
+            <p id="total-absent" class="value">0</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Smart Attendance System</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

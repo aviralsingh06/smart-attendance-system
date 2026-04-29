@@ -1,0 +1,276 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Header */
+header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 0.95em;
+  opacity: 0.9;
+}
+
+/* Main content */
+main {
+  padding: 30px;
+}
+
+/* Date section */
+.date-section {
+  margin-bottom: 30px;
+}
+
+.date-section label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+}
+
+.date-section input {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+/* Students section */
+.students-section h2,
+.stats-section h2,
+.summary-section h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.students-list {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.student-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.student-card:hover {
+  background: #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name {
+  font-weight: 600;
+  font-size: 1.05em;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.student-id {
+  font-size: 0.85em;
+  color: #999;
+}
+
+.student-actions {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-present {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-present:hover {
+  background: #45a049;
+}
+
+.btn-absent {
+  background: #f44336;
+  color: white;
+}
+
+.btn-absent:hover {
+  background: #da190b;
+}
+
+/* Stats section */
+.stats-list {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.stat-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.stat-percentage {
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 50px;
+}
+
+.percentage-high {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.percentage-low {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.stat-details {
+  display: flex;
+  gap: 20px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.stat-item {
+  display: flex;
+  gap: 5px;
+}
+
+/* Summary section */
+.summary-section {
+  margin-bottom: 30px;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:nth-child(1) {
+  background: linear-gradient(135deg, #81c784 0%, #4caf50 100%);
+}
+
+.card:nth-child(2) {
+  background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+}
+
+.label {
+  color: white;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.value {
+  color: white;
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+/* Footer */
+footer {
+  background: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  font-size: 0.9em;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5em;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .student-card {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .student-actions {
+    width: 100%;
+  }
+
+  .student-actions button {
+    flex: 1;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
