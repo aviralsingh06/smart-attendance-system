@@ -1,55 +1,45 @@
 # Smart Attendance System
 
-A simple web-based system to replace manual attendance with a digital solution. It allows marking attendance by date, calculates percentages, and highlights students with low attendance.
+A smart attendance management system designed to replace manual attendance tracking with a digital solution. The platform records attendance, calculates percentages automatically, highlights low attendance, and provides an interactive dashboard for monitoring student records.
 
-## 🚀 Features
+## Live Demo
 
-* Mark attendance (Present / Absent)
-* Date-wise attendance tracking
-* Attendance percentage calculation
-* Low attendance alert (< 75%)
-* Attendance chart visualization
+🔗 https://smart-attendance-system-mu-lilac.vercel.app
 
-## 🛠 Tech Stack
+## Features
+
+* Student attendance tracking
+* Automatic attendance percentage calculation
+* Dashboard for attendance analytics
+* Interactive UI
+* Digital attendance management
+* Real-time updates
+
+## Tech Stack
 
 * Frontend: HTML, CSS, JavaScript
-* Backend: Node.js, Express
-* Data Storage: In-memory (no database)
+* Backend: Node.js
+* Database: (Add yours if used)
+* Deployment: Vercel
+* Version Control: Git & GitHub
 
-## ▶️ How to Run
+## Installation
 
-### 1. Start Backend
+Clone the repository:
 
+git clone YOUR_GITHUB_REPOSITORY_LINK
 
-cd backend
-node server.js
+Install dependencies:
 
+npm install
 
-### 2. Open Frontend
+Run the project:
 
-Go to:
+npm run dev
 
-frontend/index.html
+## Future Improvements
 
-
-Open it in your browser.
-
-## 📊 Project Structure
-
-
-smart-attendance-system/
-│── backend/
-│   └── server.js
-│── frontend/
-│   ├── index.html
-│   ├── script.js
-│   └── style.css
-
-
-## 🎯 Purpose
-
-This project demonstrates how manual attendance systems can be digitized for better tracking and insights.
-
-## 👨‍💻 Author
-
-Aviral Singh
+* Role-based login system
+* Attendance prediction using AI
+* Email notifications
+* Better analytics dashboard
