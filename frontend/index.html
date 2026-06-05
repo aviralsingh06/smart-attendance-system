@@ -1,43 +1,528 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Smart Attendance System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System — Teachers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<h1>Smart Attendance System</h1>
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-backdrop"></div>
+        <div class="auth-container glass-card">
+            <div class="auth-brand">
+                <div class="auth-logo"><i class="fas fa-graduation-cap"></i></div>
+                <h1>AttendanceTracker</h1>
+                <p>Smart attendance management for teachers</p>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="auth-tab" data-tab="signup">
+                    <i class="fas fa-user-plus"></i> Signup
+                </button>
+            </div>
 
-<!-- Add Student -->
-<h2>Add Student</h2>
-<input id="new-student-id" placeholder="ID">
-<input id="new-student-name" placeholder="Name">
-<button onclick="addStudent()">Add Student</button>
+            <form id="loginForm" class="auth-form active">
+                <h2>Welcome Back</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="teacher@school.edu" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Enter password" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p class="auth-error" id="loginError"></p>
+            </form>
 
-<!-- Date -->
-<h2>Select Date</h2>
-<input type="date" id="attendance-date">
+            <form id="signupForm" class="auth-form">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signupName" placeholder="Your name" required autocomplete="name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signupEmail" placeholder="teacher@school.edu" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirm">Confirm Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupConfirm" placeholder="Confirm password" required autocomplete="new-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <p class="auth-error" id="signupError"></p>
+            </form>
+        </div>
+    </div>
 
-<!-- Students -->
-<h2>Students</h2>
-<div id="students-list"></div>
+    <!-- Main App -->
+    <div id="mainApp" class="app-container" style="display: none;">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Today's Attendance -->
-<h2>Today's Attendance</h2>
-<div id="todays-attendance-list"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>AttendanceTracker</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-<!-- Stats -->
-<h2>Stats</h2>
-<div id="stats-list"></div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="students">
+                    <i class="fas fa-users"></i><span>Students</span>
+                </button>
+                <button class="nav-item" data-view="attendance">
+                    <i class="fas fa-calendar-check"></i><span>Mark Attendance</span>
+                </button>
+                <button class="nav-item" data-view="analytics">
+                    <i class="fas fa-chart-bar"></i><span>Analytics</span>
+                </button>
+                <button class="nav-item" data-view="alerts">
+                    <i class="fas fa-bell"></i><span>Alerts</span>
+                    <span class="nav-badge" id="navAlertBadge">0</span>
+                </button>
+                <button class="nav-item" data-view="ai">
+                    <i class="fas fa-brain"></i><span>AI Analysis</span>
+                </button>
+            </nav>
 
-<!-- Summary -->
-<h2>Summary</h2>
-<p>Present: <span id="total-present">0</span></p>
-<p>Absent: <span id="total-absent">0</span></p>
+            <div class="sidebar-footer">
+                <div class="teacher-info" id="teacherInfo"></div>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
 
-<!-- Share -->
-<button onclick="shareReport()">📤 Share Absent Students</button>
+        <div class="app-main">
+            <header class="header">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-center">
+                    <h2 id="viewTitle">Dashboard</h2>
+                    <p class="header-subtitle" id="viewSubtitle">Overview of your class attendance</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-icon" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn-icon" id="notificationBtn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                </div>
+            </header>
 
-<script src="script.js"></script>
+            <main class="main-content">
 
+                <!-- Dashboard -->
+                <section id="dashboardView" class="view active">
+                    <div class="dashboard-grid">
+                        <div class="stat-card glass-card animate-in">
+                            <div class="stat-icon gradient-purple"><i class="fas fa-users"></i></div>
+                            <div class="stat-content">
+                                <p class="stat-label">Total Students</p>
+                                <h3 class="stat-value" id="totalStudents">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card animate-in" style="animation-delay: 0.05s">
+                            <div class="stat-icon gradient-green"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-content">
+                                <p class="stat-label">Present Today</p>
+                                <h3 class="stat-value" id="presentToday">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card animate-in" style="animation-delay: 0.1s">
+                            <div class="stat-icon gradient-red"><i class="fas fa-times-circle"></i></div>
+                            <div class="stat-content">
+                                <p class="stat-label">Absent Today</p>
+                                <h3 class="stat-value" id="absentToday">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card animate-in" style="animation-delay: 0.15s">
+                            <div class="stat-icon gradient-blue"><i class="fas fa-percentage"></i></div>
+                            <div class="stat-content">
+                                <p class="stat-label">Avg Attendance</p>
+                                <h3 class="stat-value" id="avgAttendance">0%</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card animate-in" style="animation-delay: 0.2s">
+                            <div class="stat-icon gradient-orange"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="stat-content">
+                                <p class="stat-label">Below Threshold</p>
+                                <h3 class="stat-value" id="atRiskCount">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-line"></i> Attendance Trend</h3>
+                                <span class="chart-badge">Last 30 days</span>
+                            </div>
+                            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+                        </div>
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-pie"></i> Class Distribution</h3>
+                            </div>
+                            <div class="chart-wrap"><canvas id="distributionChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="action-btn glass-card" data-action="attendance">
+                            <i class="fas fa-check-square"></i><span>Mark Attendance</span>
+                        </button>
+                        <button class="action-btn glass-card" data-action="students">
+                            <i class="fas fa-plus-circle"></i><span>Add Student</span>
+                        </button>
+                        <button class="action-btn glass-card" data-action="export-pdf">
+                            <i class="fas fa-file-pdf"></i><span>Export PDF</span>
+                        </button>
+                        <button class="action-btn glass-card" data-action="export-excel">
+                            <i class="fas fa-file-excel"></i><span>Export Excel</span>
+                        </button>
+                        <button class="action-btn glass-card" data-action="monthly-report">
+                            <i class="fas fa-file-alt"></i><span>Monthly Report</span>
+                        </button>
+                    </div>
+
+                    <div class="widget glass-card">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Students at Risk (&lt; 75%)</h3>
+                            <span class="risk-count" id="riskCountBadge">0 students</span>
+                        </div>
+                        <div class="risk-students-list" id="riskStudentsList"></div>
+                    </div>
+                </section>
+
+                <!-- Students -->
+                <section id="studentsView" class="view">
+                    <div class="view-header">
+                        <div>
+                            <h2>Student Management</h2>
+                            <p class="view-desc">Add, edit, and manage your students</p>
+                        </div>
+                        <button class="btn-primary" id="toggleStudentFormBtn">
+                            <i class="fas fa-plus"></i> Add Student
+                        </button>
+                    </div>
+
+                    <form id="studentForm" class="form-container glass-card" style="display: none;">
+                        <h3 id="studentFormTitle">Add New Student</h3>
+                        <input type="hidden" id="studentId">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="studentName">Full Name *</label>
+                                <input type="text" id="studentName" required placeholder="Rahul Singh">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentRoll">Roll Number *</label>
+                                <input type="text" id="studentRoll" required placeholder="101">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentClass">Class/Section *</label>
+                                <input type="text" id="studentClass" required placeholder="10-A">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentParentName">Parent Name</label>
+                                <input type="text" id="studentParentName" placeholder="Mr. Singh">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentParentPhone">Parent Phone</label>
+                                <input type="tel" id="studentParentPhone" placeholder="+91 9876543210">
+                            </div>
+                            <div class="form-group">
+                                <label for="studentEmail">Email</label>
+                                <input type="email" id="studentEmail" placeholder="student@email.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="studentNotes">Notes</label>
+                                <textarea id="studentNotes" rows="3" placeholder="Additional notes..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Student</button>
+                            <button type="button" class="btn-secondary" id="cancelStudentFormBtn">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="search-filter">
+                        <div class="search-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="studentSearch" placeholder="Search by name or roll number..." class="search-input">
+                        </div>
+                        <select id="classFilter" class="filter-select">
+                            <option value="">All Classes</option>
+                        </select>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="at-risk">At Risk Only</option>
+                            <option value="safe">Safe (&ge; 75%)</option>
+                        </select>
+                        <button class="btn-secondary" id="exportStudentsExcelBtn">
+                            <i class="fas fa-file-excel"></i> Export
+                        </button>
+                    </div>
+
+                    <div class="table-container glass-card">
+                        <table class="data-table students-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No.</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Parent</th>
+                                    <th>Phone</th>
+                                    <th>Attendance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody"></tbody>
+                        </table>
+                        <div class="empty-state" id="studentsEmpty" style="display: none;">
+                            <i class="fas fa-users"></i>
+                            <p>No students found. Add your first student to get started.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Attendance -->
+                <section id="attendanceView" class="view">
+                    <div class="view-header">
+                        <div>
+                            <h2>Mark Attendance</h2>
+                            <p class="view-desc">Record daily presence for your class</p>
+                        </div>
+                        <div class="attendance-controls">
+                            <input type="date" id="attendanceDate" class="input-date">
+                            <button class="btn-secondary" id="markAllPresentBtn">
+                                <i class="fas fa-check-double"></i> Mark All Present
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="attendance-tabs">
+                        <button class="tab-btn active" data-period="daily">Daily</button>
+                        <button class="tab-btn" data-period="weekly">Weekly</button>
+                        <button class="tab-btn" data-period="monthly">Monthly</button>
+                    </div>
+
+                    <div id="dailyAttendancePanel">
+                        <div class="attendance-summary glass-card" id="attendanceSummary"></div>
+                        <div class="attendance-grid" id="attendanceGrid"></div>
+                    </div>
+
+                    <div id="weeklyAttendancePanel" style="display: none;">
+                        <div class="table-container glass-card">
+                            <table class="data-table" id="weeklyTable">
+                                <thead id="weeklyTableHead"></thead>
+                                <tbody id="weeklyTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="monthlyAttendancePanel" style="display: none;">
+                        <div class="table-container glass-card">
+                            <table class="data-table" id="monthlyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Present</th>
+                                        <th>Absent</th>
+                                        <th>Total</th>
+                                        <th>%</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthlyTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics -->
+                <section id="analyticsView" class="view">
+                    <div class="view-header">
+                        <div>
+                            <h2>Attendance Analytics</h2>
+                            <p class="view-desc">Deep insights into attendance patterns</p>
+                        </div>
+                        <button class="btn-primary" id="generateReportBtn">
+                            <i class="fas fa-file-download"></i> Generate Report
+                        </button>
+                    </div>
+
+                    <div class="date-range glass-card">
+                        <div class="form-group">
+                            <label for="analyticsFromDate">From</label>
+                            <input type="date" id="analyticsFromDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="analyticsToDate">To</label>
+                            <input type="date" id="analyticsToDate">
+                        </div>
+                        <button class="btn-primary" id="filterAnalyticsBtn">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-bar"></i> Monthly Attendance %</h3>
+                            </div>
+                            <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+                        </div>
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-users"></i> Student-wise Attendance</h3>
+                            </div>
+                            <div class="chart-wrap"><canvas id="studentWiseChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card heatmap-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Monthly Attendance Heatmap</h3>
+                            <span class="chart-badge" id="heatmapMonthLabel"></span>
+                        </div>
+                        <div class="heatmap-legend">
+                            <span><span class="heat-box heat-none"></span> No data</span>
+                            <span><span class="heat-box heat-low"></span> Low</span>
+                            <span><span class="heat-box heat-mid"></span> Medium</span>
+                            <span><span class="heat-box heat-high"></span> High</span>
+                        </div>
+                        <div class="heatmap-grid" id="heatmapGrid"></div>
+                    </div>
+
+                    <div class="table-container glass-card">
+                        <h3 class="table-title">Detailed Analytics</h3>
+                        <table class="data-table analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Class</th>
+                                    <th>Present</th>
+                                    <th>Total</th>
+                                    <th>Attendance %</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analyticsTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Alerts -->
+                <section id="alertsView" class="view">
+                    <div class="view-header">
+                        <div>
+                            <h2>Low Attendance Alerts</h2>
+                            <p class="view-desc">Send WhatsApp warnings to parents and faculty</p>
+                        </div>
+                    </div>
+                    <div class="alerts-container" id="alertsList"></div>
+                </section>
+
+                <!-- AI Analysis -->
+                <section id="aiView" class="view">
+                    <div class="view-header">
+                        <div>
+                            <h2>AI Attendance Analysis</h2>
+                            <p class="view-desc">AI-powered risk detection and recommendations</p>
+                        </div>
+                    </div>
+                    <div class="ai-container glass-card">
+                        <div class="ai-intro">
+                            <i class="fas fa-brain ai-icon"></i>
+                            <h3>Intelligent Attendance Insights</h3>
+                            <p>Get AI-powered analysis of attendance patterns, at-risk predictions, and actionable recommendations.</p>
+                        </div>
+                        <button class="btn-primary btn-large" id="aiAnalysisBtn">
+                            <i class="fas fa-magic"></i> Analyze Attendance
+                        </button>
+                        <div class="ai-loading" id="aiLoading" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Analyzing attendance patterns with AI...</p>
+                        </div>
+                        <div class="ai-result" id="aiResult" style="display: none;"></div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Attendance Reminder Modal -->
+    <div id="reminderModal" class="modal" style="display: none;">
+        <div class="modal-backdrop" id="reminderBackdrop"></div>
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-bell"></i> Attendance Reminder</h3>
+                <button class="modal-close" id="reminderClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="reminderBody"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="reminderDismiss">Dismiss</button>
+                <button class="btn-primary" id="reminderGoMark">Mark Attendance Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
